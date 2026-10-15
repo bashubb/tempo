@@ -20,8 +20,8 @@
 <link rel="icon" href="assets/fav/favicon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="assets/fav/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/landing.css?v=3">
-<link rel="stylesheet" href="assets/tempo.css?v=1">
+<link rel="stylesheet" href="assets/landing.css?v=6">
+<link rel="stylesheet" href="assets/tempo.css?v=10">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -217,7 +217,7 @@
   </div>
 </footer>
 
-<script src="assets/landing.js?v=1"></script>
+<script src="assets/landing.js?v=6"></script>
 <script>
 (() => {
   const L = window.Landing;
@@ -312,7 +312,11 @@
     if (video.fastSeek && Math.abs(video.currentTime - target) > 1) video.fastSeek(target); else video.currentTime = target;
   };
   // whole clip in memory: instant seeking on any server
-  fetch(video.querySelector("source").src).then((r) => r.blob()).then((b) => { video.src = URL.createObjectURL(b); }).catch(() => {});
+  // iOS paints no frames for a video that has never played: play once, pause at once, then seeking shows frames
+  const prime = () => { const pr = video.play(); if (pr) pr.then(() => { video.pause(); seek(); }).catch(() => {}); };
+  video.addEventListener("loadeddata", prime, { once: true });
+  addEventListener("touchstart", prime, { once: true, passive: true });
+  fetch(video.querySelector("source").src).then((r) => r.blob()).then((b) => { video.src = URL.createObjectURL(b); video.addEventListener("loadeddata", prime, { once: true }); }).catch(() => {});
   video.addEventListener("seeked", () => { seeking = false; seek(); });
   video.addEventListener("loadeddata", seek);
 
