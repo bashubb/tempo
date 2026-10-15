@@ -145,3 +145,18 @@
 .tm-tools svg { width: 24px; height: 24px; color: var(--accent); }
 .tm-tools b { font-size: 18px; line-height: 28px; }
 .tm-tools span { font-size: 14px; line-height: 20px; color: var(--muted); }
+
+/* ===== Phones: same scenes, tighter content ===== */
+@media (max-width: 720px) {
+  .tools { grid-template-columns: 1fr 1fr; gap: var(--s-100); }
+  .tool { min-height: 0; padding: var(--s-200); gap: var(--s-100); }
+  .tool .ic { width: 40px; height: 40px; }
+  .tool h3 { font-size: 16px; line-height: 24px; }
+  .tool p { font-size: 12px; line-height: 16px; }
+  .tool .demo { display: none; }
+  .steps3 { gap: var(--s-100); }
+  .steps3 .card { padding: var(--s-200); display: grid; grid-template-columns: auto 1fr; column-gap: var(--s-200); align-items: center; }
+  .steps3 .n { font-size: 30px; line-height: 36px; margin: 0; grid-row: span 2; }
+  .steps3 h3 { font-size: 16px; line-height: 24px; }
+  .steps3 p { font-size: 14px; line-height: 20px; }
+}
