@@ -61,40 +61,7 @@
 </div>
 
 <main id="main">
-<!-- ===== Phone page ===== -->
-<div class="m-only">
-  <section class="m-hero" aria-labelledby="m-title">
-    <div class="wrap">
-      <span class="eyebrow">Speed ramp video editor for iPhone</span>
-      <h1 id="m-title" class="tm-title"><span>Keep the moment.</span> <span class="acc">Skip the wait.</span></h1>
-      <p class="m-p">Slow down the part worth watching. Speed through the rest.</p>
-      <div class="cta-row m-cta">
-        <span class="btn when-soon" aria-disabled="true"><svg aria-hidden="true"><use href="#i-apple-logo"/></svg>Coming soon to the App Store</span>
-        <a class="store-badge when-live" href="https://apps.apple.com/us/search?term=Tempo%20speed%20ramp" data-store-link><img src="assets/app-store-badge-white.svg" alt="Download on the App Store" width="156" height="52"></a>
-      </div>
-      <figure class="tm-frame" id="tm-frame">
-        <video id="tm-video" autoplay muted loop playsinline preload="metadata" poster="assets/media/tempo-skate-poster.jpg" aria-label="A skate clip playing fast through the wait and slow on each trick">
-          <source src="assets/media/tempo-skate.mp4" type="video/mp4">
-        </video>
-        <span class="tm-speed" id="tm-speed">4×</span>
-      </figure>
-      <div class="tm-track" aria-hidden="true"><i style="flex:2.4">4×</i><i class="slow" style="flex:1.6;--c:var(--brick)">0.5×</i><i style="flex:3.1">4×</i><i class="slow" style="flex:1.8;--c:var(--plum)">0.5×</i><i style="flex:1.98">4×</i><b id="tm-head"></b></div>
-    </div>
-  </section>
-  <section class="m-sec tight" aria-labelledby="m-tools">
-    <div class="wrap"><h2 class="m-h2" id="m-tools">Four tools on one timeline.</h2></div>
-    <ul class="m-rail tm-tools">
-      <li><svg aria-hidden="true"><use href="#i-scissors"/></svg><b>Trim</b><span>Drag the yellow handles to the good part.</span></li>
-      <li><svg aria-hidden="true"><use href="#i-gauge"/></svg><b>Pace</b><span>Any moment from 0.5× to 4×.</span></li>
-      <li><svg aria-hidden="true"><use href="#i-arrows-left-right"/></svg><b>Move</b><span>Long press to move, drag to resize.</span></li>
-      <li><svg aria-hidden="true"><use href="#i-magnifying-glass-plus"/></svg><b>Zoom</b><span>Land a change on the exact frame.</span></li>
-    </ul>
-    <p class="wrap m-p">Everything renders on your iPhone. Nothing is uploaded.</p>
-  </section>
-</div>
-
-
-<section class="scene t-hero d-only" data-scene="intro" aria-labelledby="hero-title">
+<section class="scene t-hero" data-scene="intro" aria-labelledby="hero-title">
   <div class="scene-pin">
     <div class="bleed" id="bleed">
       <video id="intro-video" autoplay muted loop playsinline preload="auto" poster="assets/media/tempo-skate-poster.jpg" aria-label="Skaters at a beach skate park">
@@ -123,7 +90,7 @@
   </div>
 </section>
 
-<section class="scene ramp d-only" id="ramp" data-scene="ramp" aria-labelledby="ramp-title">
+<section class="scene ramp" id="ramp" data-scene="ramp" aria-labelledby="ramp-title">
   <div class="scene-pin">
     <div class="wrap ramp-head">
       <div>
@@ -150,13 +117,13 @@
   </div>
 </section>
 
-<section class="tagline-band d-only" aria-label="Tempo in one line">
+<section class="tagline-band" aria-label="Tempo in one line">
   <div class="wrap">
     <p class="tagline" data-tagline>Slow what matters. <span class="hl">Speed through the rest.</span> Nobody scrolls past a clip that gets to the point.</p>
   </div>
 </section>
 
-<section class="pad d-only" id="tools" aria-labelledby="tools-title">
+<section class="pad" id="tools" aria-labelledby="tools-title">
   <div class="wrap">
     <div class="center reveal">
       <span class="eyebrow">The editor</span>
@@ -192,7 +159,7 @@
   </div>
 </section>
 
-<section class="pad d-only" id="how" style="background:var(--bg-2)" aria-labelledby="how-title">
+<section class="pad" id="how" style="background:var(--bg-2)" aria-labelledby="how-title">
   <div class="wrap">
     <div class="center reveal">
       <span class="eyebrow">How it works</span>
@@ -223,7 +190,7 @@
   </div>
 </section>
 
-<section class="pad d-only" aria-labelledby="final-title">
+<section class="pad" aria-labelledby="final-title">
   <div class="wrap">
     <div class="final reveal">
       <h2 class="hero-title" id="final-title">Keep the moment.<br>Skip the wait.</h2>
@@ -378,19 +345,6 @@
   });
 
 
-  // Phone: the clip plays by itself with the real speed ramp; the playhead runs along the track
-  const tv = document.getElementById("tm-video"), ts = document.getElementById("tm-speed"), th = document.getElementById("tm-head");
-  if (tv && matchMedia("(max-width: 720px)").matches) {
-    const ramp = [[0, 2.4, 4], [2.4, 4.0, 0.5], [4.0, 7.1, 4], [7.1, 8.9, 0.5], [8.9, 99, 4]];
-    let rate = 0;
-    const tick = () => {
-      const r = ramp.find(([a, b]) => tv.currentTime >= a && tv.currentTime < b) || ramp[0];
-      if (r[2] !== rate) { rate = r[2]; tv.playbackRate = rate; ts.textContent = rate + "×"; ts.classList.toggle("slow", rate < 1); }
-      th.style.transform = `translate3d(${(tv.currentTime / (tv.duration || 10.88)) * 100}cqw, 0, 0)`;
-      if (!tv.paused) requestAnimationFrame(tick);
-    };
-    tv.addEventListener("play", () => requestAnimationFrame(tick));
-  }
 })();
 </script>
 </body>
