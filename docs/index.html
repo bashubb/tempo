@@ -20,8 +20,8 @@
 <link rel="icon" href="assets/fav/favicon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="assets/fav/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/landing.css?v=7">
-<link rel="stylesheet" href="assets/tempo.css?v=11">
+<link rel="stylesheet" href="assets/landing.css?v=9">
+<link rel="stylesheet" href="assets/tempo.css?v=12">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -62,7 +62,7 @@
 
 <main id="main">
 
-<section class="scene t-hero d-only" data-scene="intro" aria-labelledby="hero-title">
+<section class="scene t-hero" data-scene="intro" aria-labelledby="hero-title">
   <div class="scene-pin">
     <div class="bleed" id="bleed">
       <video id="intro-video" autoplay muted loop playsinline preload="auto" poster="assets/media/tempo-skate-poster.jpg" aria-label="Skaters at a beach skate park">
@@ -91,7 +91,7 @@
   </div>
 </section>
 
-<section class="scene ramp d-only" id="ramp" data-scene="ramp" aria-labelledby="ramp-title">
+<section class="scene ramp" id="ramp" data-scene="ramp" aria-labelledby="ramp-title">
   <div class="scene-pin">
     <div class="wrap ramp-head">
       <div>
@@ -117,34 +117,6 @@
     </div>
   </div>
 </section>
-
-<div class="m-only">
-  <section class="tm-hero" aria-labelledby="tm-title">
-    <div class="wrap">
-      <span class="eyebrow">Speed ramp video editor for iPhone</span>
-      <h1 class="intro-title" id="tm-title"><span class="l1">Keep the moment.</span><span class="l2">Skip the wait.</span></h1>
-      <p class="lead">Tempo slows down the part worth watching and speeds through the rest.</p>
-      <div class="cta-row">
-        <span class="btn when-soon" aria-disabled="true"><svg aria-hidden="true"><use href="#i-apple-logo"/></svg>Coming soon to the App Store</span>
-        <a class="store-badge when-live" href="https://apps.apple.com/us/search?term=Tempo%20speed%20ramp" data-store-link><img src="assets/app-store-badge-white.svg" alt="Download on the App Store" width="156" height="52"></a>
-      </div>
-    </div>
-  </section>
-  <section class="tm-ramp" aria-labelledby="tm-ramp-title">
-    <div class="wrap">
-      <span class="eyebrow">See it</span>
-      <h2 class="title" id="tm-ramp-title">The same clip, with two Tempo sections.</h2>
-      <figure class="tm-frame">
-        <video id="tm-video" autoplay muted loop playsinline preload="metadata" poster="assets/media/tempo-skate-poster.jpg" aria-label="The skate clip playing with speed ramps: fast through the wait, slow on the tricks">
-          <source src="assets/media/tempo-skate.mp4" type="video/mp4">
-        </video>
-        <span class="tm-speed" id="tm-speed">4×</span>
-      </figure>
-      <div class="tm-track" aria-hidden="true"><i class="fast" style="flex:2.4">4×</i><i class="slow" style="flex:1.6;background:var(--brick)">0.5×</i><i class="fast" style="flex:3.1">4×</i><i class="slow" style="flex:1.8;background:var(--plum)">0.5×</i><i class="fast" style="flex:1.98">4×</i></div>
-      <p class="lead">It rushes through the wait at 4× and slows to 0.5× for each trick.</p>
-    </div>
-  </section>
-</div>
 
 <section class="tagline-band" aria-label="Tempo in one line">
   <div class="wrap">
@@ -245,7 +217,7 @@
   </div>
 </footer>
 
-<script src="assets/landing.js?v=6"></script>
+<script src="assets/landing.js?v=9"></script>
 <script>
 (() => {
   const L = window.Landing;
@@ -344,7 +316,7 @@
   const prime = () => { const pr = video.play(); if (pr) pr.then(() => { video.pause(); seek(); }).catch(() => {}); };
   video.addEventListener("loadeddata", prime, { once: true });
   addEventListener("touchstart", prime, { once: true, passive: true });
-  if (!matchMedia("(max-width: 720px)").matches) fetch(video.querySelector("source").src).then((r) => r.blob()).then((b) => { video.src = URL.createObjectURL(b); video.addEventListener("loadeddata", prime, { once: true }); }).catch(() => {});
+  fetch(video.querySelector("source").src).then((r) => r.blob()).then((b) => { video.src = URL.createObjectURL(b); video.addEventListener("loadeddata", prime, { once: true }); }).catch(() => {});
   video.addEventListener("seeked", () => { seeking = false; seek(); });
   video.addEventListener("loadeddata", seek);
 
@@ -369,17 +341,6 @@
     outTime.textContent = fmt(t);
   });
 
-  // Phones: the clip plays by itself with the real speed ramp
-  const tv = document.getElementById("tm-video"), ts = document.getElementById("tm-speed");
-  if (tv && matchMedia("(max-width: 720px)").matches) {
-    const ramp = [[0, 2.4, 4], [2.4, 4.0, 0.5], [4.0, 7.1, 4], [7.1, 8.9, 0.5], [8.9, 99, 4]];
-    const tick = () => {
-      const r = ramp.find(([a, b]) => tv.currentTime >= a && tv.currentTime < b) || ramp[0];
-      if (tv.playbackRate !== r[2]) { tv.playbackRate = r[2]; ts.textContent = r[2] + "×"; ts.classList.toggle("slow", r[2] < 1); }
-      if (!tv.paused) requestAnimationFrame(tick);
-    };
-    tv.addEventListener("play", () => requestAnimationFrame(tick));
-  }
 })();
 </script>
 </body>
