@@ -21,7 +21,7 @@
 <link rel="apple-touch-icon" href="assets/fav/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/landing.css?v=21">
-<link rel="stylesheet" href="assets/tempo.css?v=22">
+<link rel="stylesheet" href="assets/tempo.css?v=32">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -248,7 +248,13 @@
     const rate = !reduce && fast > 0.02 && fast < 1 ? 4 : 1;
     if (rate !== lastRate) { introVideo.playbackRate = rate; lastRate = rate; }
     const sc = 1 - t * 0.42;
-    bleed.style.transform = `translate3d(0, ${t * 12}vh, 0) rotateX(${t * 16}deg) scale(${sc})`;
+    if (innerWidth < innerHeight) {
+      // phones: a 16:9 clip that starts scaled up to fill the screen and settles into a card (video scales on the GPU, stays sharp)
+      const cover = innerHeight / (innerWidth * 9 / 16), k = cover + (0.92 - cover) * t;
+      bleed.style.transform = `translate3d(0, -50%, 0) scale(${k})`;
+    } else {
+      bleed.style.transform = `translate3d(0, ${t * 12}vh, 0) rotateX(${t * 16}deg) scale(${sc})`;
+    }
     if ((t > 0.04) !== carded) { carded = t > 0.04; bleed.classList.toggle("carded", carded); }
     shade.style.opacity = (0.62 * (1 - t)).toFixed(3);
   });
