@@ -20,8 +20,8 @@
 <link rel="icon" href="assets/fav/favicon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="assets/fav/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/landing.css?v=9">
-<link rel="stylesheet" href="assets/tempo.css?v=12">
+<link rel="stylesheet" href="assets/landing.css?v=10">
+<link rel="stylesheet" href="assets/tempo.css?v=13">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -217,7 +217,7 @@
   </div>
 </footer>
 
-<script src="assets/landing.js?v=9"></script>
+<script src="assets/landing.js?v=11"></script>
 <script>
 (() => {
   const L = window.Landing;
@@ -231,22 +231,26 @@
   const cue = document.getElementById("cue"), chip = document.getElementById("intro-chip");
   const introVideo = document.getElementById("intro-video");
   if (reduce) introVideo.removeAttribute("autoplay");
+  // Only compositor-friendly properties change per frame (transform, opacity); text and rate change only when they differ
+  let lastChip = "", lastRate = 1, carded = false;
   L.scene("intro", (p) => {
     const t = L.ease(L.range(p, 0, 0.75));
     const fast = L.range(p, 0.05, 0.45);
-    foot.style.opacity = eyebrow.style.opacity = (1 - L.range(p, 0, 0.18)).toFixed(3);
-    foot.style.transform = `translateY(${L.range(p, 0, 0.18) * 32}px)`;
+    const head = 1 - L.range(p, 0, 0.18);
+    foot.style.opacity = eyebrow.style.opacity = head.toFixed(3);
+    foot.style.transform = `translate3d(0, ${(1 - head) * 32}px, 0)`;
     cue.style.opacity = (1 - L.range(p, 0, 0.06)).toFixed(3);
-    l1.style.transform = `translateY(${-t * 16}vh) scale(${1 - t * 0.3})`;
+    l1.style.transform = `translate3d(0, ${-t * 16}vh, 0) scale(${1 - t * 0.3})`;
     l1.style.opacity = (1 - L.range(p, 0.22, 0.48)).toFixed(3);
-    l2.style.transform = `translateX(${fast * fast * 120}vw) skewX(${-fast * 18}deg)`;
-    l2.style.filter = fast > 0 ? `blur(${fast * 14}px)` : "";
-    l2.style.opacity = (1 - L.range(p, 0.3, 0.45)).toFixed(3);
-    chip.textContent = fast > 0.02 && fast < 1 ? "Skipping the wait · 4×" : "Original · 1×";
-    if (!reduce) introVideo.playbackRate = fast > 0.02 && fast < 1 ? 4 : 1;
+    l2.style.transform = `translate3d(${fast * fast * 120}vw, 0, 0) skewX(${-fast * 18}deg)`;
+    l2.style.opacity = (1 - L.range(p, 0.25, 0.45)).toFixed(3);
+    const chipTxt = fast > 0.02 && fast < 1 ? "Skipping the wait · 4×" : "Original · 1×";
+    if (chipTxt !== lastChip) { chip.textContent = chipTxt; lastChip = chipTxt; }
+    const rate = !reduce && fast > 0.02 && fast < 1 ? 4 : 1;
+    if (rate !== lastRate) { introVideo.playbackRate = rate; lastRate = rate; }
     const sc = 1 - t * 0.42;
-    bleed.style.transform = `translateY(${t * 12}vh) rotateX(${t * 16}deg) scale(${sc})`;
-    bleed.style.borderRadius = `${(t * 32) / sc}px`;
+    bleed.style.transform = `translate3d(0, ${t * 12}vh, 0) rotateX(${t * 16}deg) scale(${sc})`;
+    if ((t > 0.04) !== carded) { carded = t > 0.04; bleed.classList.toggle("carded", carded); }
     shade.style.opacity = (0.62 * (1 - t)).toFixed(3);
   });
 
