@@ -21,7 +21,7 @@
 <link rel="apple-touch-icon" href="assets/fav/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/landing.css?v=21">
-<link rel="stylesheet" href="assets/tempo.css?v=32">
+<link rel="stylesheet" href="assets/tempo.css?v=34">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -250,7 +250,8 @@
     const sc = 1 - t * 0.42;
     if (innerWidth < innerHeight) {
       // phones: a 16:9 clip that starts scaled up to fill the screen and settles into a card (video scales on the GPU, stays sharp)
-      const cover = innerHeight / (innerWidth * 9 / 16), k = cover + (0.92 - cover) * t;
+      const tp = L.ease(L.range(p, 0, 0.5));          // lands a little sooner than on desktop, so the card is whole mid-scene
+      const cover = innerHeight / (innerWidth * 9 / 16), k = cover + (0.92 - cover) * tp;
       bleed.style.transform = `translate3d(0, -50%, 0) scale(${k})`;
     } else {
       bleed.style.transform = `translate3d(0, ${t * 12}vh, 0) rotateX(${t * 16}deg) scale(${sc})`;
