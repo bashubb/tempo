@@ -20,8 +20,8 @@
 <link rel="icon" href="assets/fav/favicon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="assets/fav/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/landing.css?v=21">
-<link rel="stylesheet" href="assets/tempo.css?v=34">
+<link rel="stylesheet" href="assets/landing.css?v=41">
+<link rel="stylesheet" href="assets/tempo.css?v=35">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -70,7 +70,7 @@
       <span class="shade" id="shade"></span>
       <span class="chip" id="intro-chip">Original · 1×</span>
     </div>
-    <div class="intro wrap">
+    <div class="intro wrap m-fit">
       <span class="eyebrow" id="intro-eyebrow">Speed ramp video editor for iPhone</span>
       <h1 class="intro-title" id="hero-title"><span class="l1" id="l1">Keep the moment.</span><span class="l2" id="l2">Skip the wait.</span></h1>
       <div class="intro-foot" id="intro-foot">
@@ -90,7 +90,7 @@
   </div>
 </section>
 
-<section class="scene ramp" id="ramp" data-scene="ramp" aria-labelledby="ramp-title">
+<section class="scene ramp d-only" id="ramp" data-scene="ramp" aria-labelledby="ramp-title">
   <div class="scene-pin">
     <div class="wrap ramp-head">
       <div>
@@ -113,6 +113,25 @@
         </video>
         <span class="ramp-stats"><span id="out-time">0:00.0</span><span>of</span><b id="out-total">0:08.3</b></span>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="m-only m-sec ramp-m" id="ramp-m" aria-labelledby="ramp-m-title">
+  <div class="wrap m-slide">
+    <div class="m-txt">
+      <span class="eyebrow">See it</span>
+      <h2 class="title" id="ramp-m-title">Fast through the wait.<br>Slow for the trick.</h2>
+      <p class="lead">The same clip with two Tempo sections: it rushes through the wait at 4× and slows to 0.5× for each trick.</p>
+    </div>
+    <div class="m-vis">
+      <div class="mr-frame">
+        <video id="m-ramp" muted playsinline loop preload="metadata" poster="assets/media/tempo-skate-poster.jpg" aria-label="The skate clip with speed ramps applied: fast through the wait, slow for both tricks">
+          <source src="assets/media/tempo-skate.mp4" type="video/mp4">
+        </video>
+        <span class="mr-speed" id="m-speed">4×</span>
+      </div>
+      <div class="mr-track" id="m-track" aria-hidden="true"><b id="m-head"></b></div>
     </div>
   </div>
 </section>
@@ -216,7 +235,7 @@
   </div>
 </footer>
 
-<script src="assets/landing.js?v=20"></script>
+<script src="assets/landing.js?v=41"></script>
 <script>
 (() => {
   const L = window.Landing;
@@ -326,9 +345,43 @@
   const prime = () => { const pr = video.play(); if (pr) pr.then(() => { video.pause(); seek(); }).catch(() => {}); };
   video.addEventListener("loadeddata", prime, { once: true });
   addEventListener("touchstart", prime, { once: true, passive: true });
-  fetch(video.querySelector("source").src).then((r) => r.blob()).then((b) => { video.src = URL.createObjectURL(b); video.addEventListener("loadeddata", prime, { once: true }); }).catch(() => {});
+  if (!L.phone) fetch(video.querySelector("source").src).then((r) => r.blob()).then((b) => { video.src = URL.createObjectURL(b); video.addEventListener("loadeddata", prime, { once: true }); }).catch(() => {});
   video.addEventListener("seeked", () => { seeking = false; seek(); });
   video.addEventListener("loadeddata", seek);
+
+  // Phones: the clip plays with the real ramp (rate per section), a timeline shows where it is
+  if (L.phone) {
+    const mv = document.getElementById("m-ramp"), mSpeed = document.getElementById("m-speed");
+    const mTrack = document.getElementById("m-track"), mHead = document.getElementById("m-head");
+    parts.forEach((s) => {
+      const el = document.createElement("i");
+      el.style.flexGrow = s.out.toFixed(3);
+      if (s.color) el.style.background = s.color;
+      el.textContent = s.speed + "×";
+      mTrack.insertBefore(el, mHead);
+    });
+    let mi = -1;
+    const tickRamp = () => {
+      const t = mv.currentTime;
+      let i = parts.findIndex((s) => t < s.to);
+      if (i < 0) i = parts.length - 1;
+      const s = parts[i];
+      if (i !== mi) {
+        mi = i;
+        if (!reduce) mv.playbackRate = s.speed;
+        mSpeed.textContent = s.speed + "×";
+        mSpeed.style.color = s.color || "";
+        mv.parentElement.style.setProperty("--ring", s.color || "transparent");
+      }
+      const out = (s.outFrom + (Math.min(t, s.to) - s.from) / s.speed) / TOTAL;
+      mHead.style.transform = `translate3d(${(out * mTrack.clientWidth).toFixed(1)}px, 0, 0)`;
+      if (!mv.paused) requestAnimationFrame(tickRamp);
+    };
+    mv.addEventListener("play", () => requestAnimationFrame(tickRamp));
+    mv.addEventListener("seeked", tickRamp);
+    if (!reduce) new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) mv.play().catch(() => {}); else mv.pause(); }), { threshold: 0.5 }).observe(mv);
+    else mv.controls = true;
+  }
 
   L.scene("ramp", (p) => {
     const t = L.clamp(p / 0.96) * TOTAL;
