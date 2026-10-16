@@ -20,8 +20,8 @@
 <link rel="icon" href="assets/fav/favicon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="assets/fav/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/landing.css?v=45">
-<link rel="stylesheet" href="assets/tempo.css?v=35">
+<link rel="stylesheet" href="assets/landing.css?v=47">
+<link rel="stylesheet" href="assets/tempo.css?v=36">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -67,6 +67,10 @@
       <video id="intro-video" autoplay muted loop playsinline preload="auto" poster="assets/media/tempo-skate-poster.jpg" aria-label="Skaters at a beach skate park">
         <source src="assets/media/tempo-skate.mp4" type="video/mp4">
       </video>
+      <picture class="loop-bg" aria-hidden="true">
+        <source media="(orientation: portrait)" data-srcset="assets/media/tempo-skate-tall.webp">
+        <img alt="" width="640" height="360" decoding="async" data-src="assets/media/tempo-skate-wide.webp">
+      </picture>
       <span class="shade" id="shade"></span>
       <span class="chip" id="intro-chip">Original · 1×</span>
     </div>
@@ -235,7 +239,7 @@
   </div>
 </footer>
 
-<script src="assets/landing.js?v=45"></script>
+<script src="assets/landing.js?v=47"></script>
 <script>
 (() => {
   const L = window.Landing;
@@ -249,6 +253,12 @@
   const cue = document.getElementById("cue"), chip = document.getElementById("intro-chip");
   const introVideo = document.getElementById("intro-video");
   if (reduce) introVideo.removeAttribute("autoplay");
+  // Phones: the background is a looping animated image (plays even in Low Power Mode); the video loads nothing
+  if (L.phone) {
+    introVideo.removeAttribute("autoplay"); introVideo.querySelector("source").remove(); introVideo.removeAttribute("poster"); introVideo.load();
+    const pic = document.querySelector(".loop-bg"), img = pic.querySelector("img"), src = pic.querySelector("source");
+    src.srcset = src.dataset.srcset; img.src = img.dataset.src;
+  }
   // Only compositor-friendly properties change per frame (transform, opacity); text and rate change only when they differ
   let lastChip = "", lastRate = 1, carded = false;
   L.scene("intro", (p) => {
